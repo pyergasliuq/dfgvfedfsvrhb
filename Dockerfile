@@ -6,7 +6,7 @@
 
 FROM debian:bookworm-slim
 
-# Install runtime deps
+# Install runtime deps + curl (for healthchecks if needed)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -25,10 +25,13 @@ RUN chmod +x /usr/local/bin/astcenc
 # Copy assets
 COPY assets/ /app/assets/
 
+# Copy .env file (if exists, will be overridden by docker env vars)
+COPY .env /app/.env
+
 # Create data/logs/work dirs
 RUN mkdir -p /app/data /app/logs /app/work
 
-# Environment defaults (override at runtime)
+# Environment defaults (override at runtime via bothost panel or .env)
 ENV TOKEN="" \
     API_ID="" \
     API_HASH="" \
